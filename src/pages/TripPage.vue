@@ -4,14 +4,18 @@
         <Weather/>
     </div>
     <div class="lower-part">
-        <div class="time-table window"></div>
+        <div class="time-table window">
+            <div v-for="stop in arrStop" :key="stop.duration">
+                {{stop.arrival}} <span v-if="stop.arrival && stop.departure">-</span> {{stop.departure}} {{stop.title}}
+            </div>
+        </div>
         <div class="map window"></div>
         <div class="interesting window"></div>
     </div>
-    <button @click="getDataAPI()">Тык</button>
 </template>
 
 <script>
+import axios from 'axios'
 import Weather from "@/components/Weather";
 import Stations from "@/components/Stations";
 
@@ -21,12 +25,28 @@ export default {
         Weather
     },
     data() {
-        return {}
+        return {
+            baseURL: 'http://mypew.ru:3001/route_data/',
+            arrStop: [],
+        }
     },
     methods: {
         async loadTrip() {
-            const windowData = Object.fromEntries(new URL(window.location).searchParams.entries());
-            console.log(windowData);
+            try {
+                const response = await axios.get(this.baseURL + this.$route.params.uid);
+                this.arrStop = response.data.stops;
+                console.log(this.arrStop);
+                this.arrStop.forEach(el => {
+                    if (el.arrival) {
+                        el.arrival = el.arrival.slice(11, 16);
+                    }
+                    if (el.departure) {
+                        el.departure = el.departure.slice(11, 16);
+                    }
+                })
+            } catch(e) {
+                alert('Error: ' + e);
+            }
         }
     },
     created() {
