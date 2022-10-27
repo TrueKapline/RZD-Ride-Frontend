@@ -8,9 +8,11 @@
         <div class="map window"></div>
         <div class="interesting window"></div>
     </div>
+    <button @click="getDataAPI()">Тык</button>
 </template>
 
 <script>
+import axios from 'axios'
 import Weather from "@/components/Weather";
 import Stations from "@/components/Stations";
 
@@ -18,6 +20,21 @@ export default {
     components: {
         Stations,
         Weather
+    },
+    data() {
+        return {
+            URL: 'http://mypew.ru:3001/routes_suburbans_station_from_to/Ангарск/Кая'
+        }
+    },
+    methods: {
+        async getDataAPI() { //Получение данных с api
+            try {
+                const response = await axios.get(this.URL); //Запрос
+                console.log(response);
+            } catch(e) {
+                alert('Error: ' + e);
+            }
+        },
     }
 }
 </script>

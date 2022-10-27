@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import MainPage from '@/pages/MainPage.vue'
+import TripPage from '@/pages/TripPage.vue'
 
 const routes = [
     {
-        path: '/',
-        component: MainPage,
+        path: '/trip',
+        component: TripPage,
     }
 ]
 
