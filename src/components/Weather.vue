@@ -1,6 +1,6 @@
 <template>
     <div class="time-and-weather">
-        <h1 class="time">00:51</h1>
+        <h1 class="time">{{time}}</h1>
         <div class="weather">
             <img src="@/icons/sun-icon.svg" alt="" class="weather-icon">
             <span class="weather-text">Ясно, 15°С</span>
@@ -10,7 +10,17 @@
 
 <script>
 export default {
-    name: "Weather"
+    name: "Weather",
+    props: {
+        time: {
+            type: String,
+        }
+    },
+    data() {
+        return {
+            
+        }
+    }
 };
 </script>
 
