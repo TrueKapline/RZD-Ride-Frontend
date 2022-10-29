@@ -10,7 +10,9 @@
             </div>
             <div style="margin-right: 2vw; background-color: white; border-radius: 16px; position: relative;" :style="isAvailEnd ? 'border-radius: 16px 16px 0 0' : ''">
                 <input @click="clickEndStation()" v-model="endStation" style="padding: 0.5vw; font-size: 16px; border-radius: 16px;"/>
-                <div v-for="nameStation in arrEndStation" :key="nameStation.station_name" style="background-color: white; padding: 0.5vw; font-size: 16px; border-radius: 16px;">{{nameStation.station_name}}</div>
+                <div style="position: absolute; width: 100%; background-color: white; border-radius: 0 0 16px 16px;">
+                    <div v-for="nameStation in arrEndStation" :key="nameStation.station_name" style="background-color: white; padding: 0.5vw; font-size: 16px; border-radius: 16px;">{{nameStation.station_name}}</div>
+                </div>
             </div>
             <div>
                 <button @click="getStation()" style="margin-right: 2vw; padding: 0.5vw; font-size: 16px; border-radius: 16px; cursor: pointer;">Найти маршруты</button>
@@ -82,9 +84,15 @@ export default {
             this.changeEndStation();
         },
         async getStation() { //Функция для получения списка станций
+            let time = (new Date()).toLocaleString();
+            let date = time.slice(6, 10) + '-' + time.slice(3, 5) + '-' + time.slice(0, 2);
+            this.arrStartStation = [];
+            this.isAvailEnd = false;
+            this.arrEndStation = [];
+            this.isAvailStart = false;
             if ((this.startStation != '') || (this.endStation != '')) {
                 try {
-                    const response = await axios.get(this.baseURL + this.startStation + '/' + this.endStation + '/' + '2022-10-28');
+                    const response = await axios.get(this.baseURL + this.startStation + '/' + this.endStation + '/' + date);
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
                     this.arrRoute.map(el => {
