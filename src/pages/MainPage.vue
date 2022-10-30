@@ -47,7 +47,7 @@
                     <div class="parameters">
                         <span class="parameter">{{ route.depShow }}</span>
                         <span class="parameter">{{ route.arrShow }}</span>
-                        <span class="parameter">1 ч 23 м</span>
+                        <span class="parameter">{{ route.travelTimeShow }}</span>
                         <span class="parameter">{{ route.title }}</span>
                     </div>
                     <hr>
@@ -160,6 +160,15 @@ export default {
                     this.arrRoute.map(el => {
                         el.depShow = el.dep.slice(11, 16);
                         el.arrShow = el.arr.slice(11, 16);
+                        let travelTime = (new Date(el.arr) - new Date(el.dep)) / 60000;
+                        let hour = 0;
+                        if (travelTime >= 60) {
+                            hour = Math.trunc(travelTime / 60);
+                            el.travelTimeShow = hour + " ч ";
+                        } else {
+                            el.travelTimeShow = '';
+                        }
+                        el.travelTimeShow += (travelTime - hour * 60) + " м";
                     });
                 } catch (e) {
                     alert('Error: ' + e);
