@@ -18,7 +18,7 @@
 
                 <img src="@/icons/arrow-large.svg" alt="" draggable="false">
                 <div class="to">
-                    <input type="text" id="to" class="to__input" placeholder=" " @click="clickEndStation()"
+                    <input type="text" id="to" class="to__input" placeholder=" " autocomplete="off" @click="clickEndStation()"
                            v-model="endStation"
                            :style="isAvailEnd ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
                     <label for="to" class="to__label">Куда</label>
