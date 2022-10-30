@@ -4,7 +4,7 @@
             <h1 class="header">Расписание электричек</h1>
             <div class="form">
                 <div class="from">
-                    <input type="text" id="from" class="from__input" placeholder=" " @click="clickStartStation()"
+                    <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off" @click="clickStartStation()"
                            v-model="startStation"
                            :style="isAvailStart ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
                     <label for="from" class="from__label">Откуда</label>
@@ -316,6 +316,7 @@ img {
     transition: 500ms cubic-bezier(0.5, 0, 0, 1);
     margin-left: auto;
     user-select: none;
+    outline: none;
 
     &:hover {
         background-color: $accent-red-hover;
@@ -347,6 +348,7 @@ img {
     border-radius: 10px;
     padding: .5em 1em .6em;
     color: $main-color;
+    outline: none;
 
     &:hover {
         text-decoration: underline;
