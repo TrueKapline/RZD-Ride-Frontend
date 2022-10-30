@@ -74,21 +74,15 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 
 $component-bg-color: #FFFFFF;
 $text-color: #1F1F24;
 
-html {
-    height: 100%;
-}
-
 body {
-    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 #app {
@@ -101,7 +95,7 @@ body {
 
 .status {
     height: 158px;
-    margin: 0 50px 2.5vw;
+    margin: 3em 3em 2.5vw;
     background-color: $component-bg-color;
     border-radius: 10px;
     display: flex;

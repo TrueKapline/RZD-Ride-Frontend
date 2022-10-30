@@ -1,33 +1,65 @@
 <template>
-    <div style="margin: auto; width: max-content; height: 100vh;">
-        <h1 style="margin-bottom: 1vw;">Это главная страница для выбора маршрута</h1>
-        <div style="display: flex;">
-            <div style="margin-right: 2vw; background-color: white; border-radius: 16px; position: relative;" :style="isAvailStart ? 'border-radius: 16px 16px 0 0' : ''">
-                <input @click="clickStartStation()" v-model="startStation" style="padding: 0.5vw; font-size: 16px; border-radius: 16px;"/>
-                <div style="position: absolute; width: 100%; background-color: white; border-radius: 0 0 16px 16px;">
-                    <div v-for="nameStation in arrStartStation" :key="nameStation.station_name" style="background-color: white; padding: 0.5vw; font-size: 16px; border-radius: 16px;">{{nameStation.station_name}}</div>
+    <main :style="isResultHidden ? 'justify-content: center' : ''">
+        <div class="window search">
+            <h1 class="header">Расписание электричек</h1>
+            <div class="form">
+                <div class="from">
+                    <input type="text" id="from" class="from__input" placeholder=" " @click="clickStartStation()"
+                           v-model="startStation"
+                           :style="isAvailStart ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
+                    <label for="from" class="from__label">Откуда</label>
+                    <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
+                        <button class="element-button" v-for="nameStation in arrStartStation"
+                                :key="nameStation.station_name">
+                            {{ nameStation.station_name }}
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div style="margin-right: 2vw; background-color: white; border-radius: 16px; position: relative;" :style="isAvailEnd ? 'border-radius: 16px 16px 0 0' : ''">
-                <input @click="clickEndStation()" v-model="endStation" style="padding: 0.5vw; font-size: 16px; border-radius: 16px;"/>
-                <div style="position: absolute; width: 100%; background-color: white; border-radius: 0 0 16px 16px;">
-                    <div v-for="nameStation in arrEndStation" :key="nameStation.station_name" style="background-color: white; padding: 0.5vw; font-size: 16px; border-radius: 16px;">{{nameStation.station_name}}</div>
+
+                <img src="@/icons/arrow-large.svg" alt="" draggable="false">
+                <div class="to">
+                    <input type="text" id="to" class="to__input" placeholder=" " @click="clickEndStation()"
+                           v-model="endStation"
+                           :style="isAvailEnd ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
+                    <label for="to" class="to__label">Куда</label>
+                    <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
+                        <button class="element-button" v-for="nameStation in arrEndStation"
+                                :key="nameStation.station_name">
+                            {{ nameStation.station_name }}
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <button @click="getStation()" style="margin-right: 2vw; padding: 0.5vw; font-size: 16px; border-radius: 16px; cursor: pointer;">Найти маршруты</button>
+                <input type="date" id="date" class="date">
+                <button class="search-button" @click="getStation()">Найти маршруты</button>
             </div>
         </div>
-        <div>
-            <div @click="$router.push('/trip/'+route.uid);" v-for="route in arrRoute" :key="route.uid" :value="route.uid" style="padding: 1vw; background-color: white; margin: 1vw 0; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between;">
-                <span style="width: 50%">{{route.title}}</span><span>{{route.depShow}}</span><span>{{route.arrShow}}</span>
+        <div class="window results" :style="isResultHidden ? 'display: none' : ''">
+            <div class="headings">
+                <p>Отпр.</p>
+                <p>Приб.</p>
+                <p>В пути</p>
+                <p>Маршрут</p>
+            </div>
+            <hr>
+            <div class="wrapper">
+                <div class="results-list" v-for="route in arrRoute" :key="route.uid" :value="route.uid"
+                     @click="$router.push('/trip/'+route.uid);">
+                    <div class="parameters">
+                        <span class="parameter">{{ route.depShow }}</span>
+                        <span class="parameter">{{ route.arrShow }}</span>
+                        <span class="parameter">1 ч 23 м</span>
+                        <span class="parameter">{{ route.title }}</span>
+                    </div>
+                    <hr>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+
 export default {
     data() {
         return {
@@ -40,7 +72,8 @@ export default {
             isAvailStart: false,
             arrEndStation: [],
             isAvailEnd: false,
-        }
+            isResultHidden: true,
+        };
     },
     methods: {
         async changeStartStation() { //Функция для загрузки подсказки набора станций
@@ -49,8 +82,12 @@ export default {
                 try {
                     const response = await axios.get(this.findURL + this.startStation);
                     this.arrStartStation = response.data;
-                    this.isAvailStart = true;
-                } catch(e) {
+                    if (this.arrStartStation.length !== 0) {
+                        this.isAvailStart = true;
+                    } else {
+                        this.isAvailStart = false;
+                    }
+                } catch (e) {
                     alert('Error: ' + e);
                 }
             } else {
@@ -64,8 +101,12 @@ export default {
                 try {
                     const response = await axios.get(this.findURL + this.endStation);
                     this.arrEndStation = response.data;
-                    this.isAvailEnd = true;
-                } catch(e) {
+                    if (this.arrEndStation.length !== 0) {
+                        this.isAvailEnd = true;
+                    } else {
+                        this.isAvailEnd = false;
+                    }
+                } catch (e) {
                     alert('Error: ' + e);
                 }
             } else {
@@ -90,6 +131,7 @@ export default {
             this.isAvailEnd = false;
             this.arrEndStation = [];
             this.isAvailStart = false;
+            this.isResultHidden = false;
             if ((this.startStation != '') || (this.endStation != '')) {
                 try {
                     const response = await axios.get(this.baseURL + this.startStation + '/' + this.endStation + '/' + date);
@@ -98,24 +140,297 @@ export default {
                     this.arrRoute.map(el => {
                         el.depShow = el.dep.slice(11, 16);
                         el.arrShow = el.arr.slice(11, 16);
-                    })
-                } catch(e) {
+                    });
+                } catch (e) {
                     alert('Error: ' + e);
                 }
             }
         }
     },
     watch: {
-        startStation: function() {
+        startStation: function () {
             this.changeStartStation();
         },
-        endStation: function() {
+        endStation: function () {
             this.changeEndStation();
         }
     }
-}
+};
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+$white: #FFFFFF;
+$main-color: #363636;
+$input-grey: #9A9A9A;
+$text-grey: #929292;
+$accent-red: #FF3A38;
+$accent-red-hover: #E31B1A;
+$scrollbar-background: #DBDBDB;
+
+main {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 0 3.1em;
+}
+
+h1 {
+    color: $main-color;
+}
+
+img {
+    user-select: none;
+}
+
+.window {
+    background-color: $white;
+    box-shadow: 0 4px 10px 2px #E0E0E3;
+    border-radius: 10px;
+    width: 100%;
+    margin: 3.1em 0 0;
+}
+
+.header {
+    margin: 35px 0 35px 60px;
+}
+
+.form {
+    display: flex;
+    margin: 0 60px 40px;
+}
+
+.from {
+    position: relative;
+    width: 19.9%;
+    margin-right: 1%;
+
+    &__input {
+        width: calc(100% - 2em - 6px);
+        height: 74px;
+        top: 0;
+        left: 0;
+        border: 3px solid $main-color;
+        color: $main-color;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 26px;
+        outline: none;
+        background: none;
+        padding: 0 1em;
+        user-select: none;
+    }
+
+    &__label {
+        position: absolute;
+        left: 1.1em;
+        top: 0.85em;
+        font-size: 26px;
+        padding: 0 0.3rem;
+        color: $input-grey;
+        cursor: text;
+        transition: top 200ms cubic-bezier(0.5, 0, 0, 1),
+        left 200ms cubic-bezier(0.5, 0, 0, 1),
+        font-size 200ms cubic-bezier(0.5, 0, 0, 1),
+        color 500ms cubic-bezier(0.5, 0, 0, 1);
+        background-color: $white;
+        user-select: none;
+    }
+}
+
+.from__input:focus ~ .from__label,
+.from__input:not(:placeholder-shown).from__input:not(:focus) ~ .from__label {
+    top: -10%;
+    left: 8%;
+    font-size: 16px;
+    color: $main-color;
+}
+
+.to {
+    position: relative;
+    width: 19.9%;
+    margin: 0 3% 0 1%;
+
+    &__input {
+        width: calc(100% - 2em - 6px);
+        height: 74px;
+        top: 0;
+        left: 0;
+        border: 3px solid $main-color;
+        color: $main-color;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 26px;
+        outline: none;
+        background: none;
+        padding: 0 1em;
+        user-select: none;
+    }
+
+    &__label {
+        position: absolute;
+        left: 1.1em;
+        top: 0.85em;
+        font-size: 26px;
+        padding: 0 0.3rem;
+        color: $input-grey;
+        cursor: text;
+        transition: top 200ms cubic-bezier(0.5, 0, 0, 1),
+        left 200ms cubic-bezier(0.5, 0, 0, 1),
+        font-size 200ms cubic-bezier(0.5, 0, 0, 1),
+        color 500ms cubic-bezier(0.5, 0, 0, 1);
+        background-color: $white;
+        user-select: none;
+    }
+}
+
+.to__input:focus ~ .to__label,
+.to__input:not(:placeholder-shown).to__input:not(:focus) ~ .to__label {
+    top: -10%;
+    left: 8%;
+    font-size: 16px;
+    color: $main-color;
+}
+
+.date {
+    width: calc(19.9% - 2em - 6px);
+    height: 74px;
+    border: 3px solid $main-color;
+    color: $main-color;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 26px;
+    padding: 0 1em 0 1em;
+}
+
+.search-button {
+    background: $accent-red;
+    border: 3px solid $accent-red;
+    border-radius: 10px;
+    color: $white;
+    width: 19.9%;
+    height: 80px;
+    font-family: inherit;
+    font-size: 26px;
+    transition: 500ms cubic-bezier(0.5, 0, 0, 1);
+    margin-left: auto;
+    user-select: none;
+
+    &:hover {
+        background-color: $accent-red-hover;
+        border-color: $accent-red-hover;
+        cursor: pointer;
+    }
+}
+
+.search-results {
+    position: absolute;
+    top: 77px;
+    background-color: $white;
+    border-radius: 0 0 10px 10px;
+    border: 3px solid $main-color;
+    width: calc(100% - 6px);
+    max-height: 250px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.element-button {
+    display: block;
+    border: unset;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 26px;
+    background-color: $white;
+    border-radius: 10px;
+    padding: .5em 1em .6em;
+    color: $main-color;
+
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 30px;
+}
+
+::-webkit-scrollbar-track {
+    background: $white;
+    border-radius: 100vmax;
+    margin-block: .3em;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $accent-red;
+    border-radius: 100vmax;
+    border: 10px solid $white;
+}
+
+.results {
+    margin: 3em;
+    max-height: 60vh;
+}
+
+.wrapper {
+    max-height: 75%;
+    overflow: hidden;
+    overflow-y: scroll;
+    margin-right: 50px;
+}
+
+.headings {
+    display: flex;
+    margin: 2% 0 2% 8%;
+
+    p {
+        color: $text-grey;
+        font-size: 32px;
+        margin-right: 11%;
+    }
+
+    p:nth-child(3) {
+        margin-right: 22%;
+    }
+
+    p:last-child {
+        margin-right: 0;
+    }
+}
+
+hr {
+    border: 2px solid #929292;
+    border-top: none;
+    margin: 0 60px;
+}
+
+.results-list {
+    margin-bottom: 1em;
+
+    hr {
+        margin: 0 5px 0 60px;
+    }
+
+    .parameters {
+        margin: 1% 0 1% 8%;
+
+        .parameter {
+            color: $main-color;
+            font-size: 32px;
+            margin-right: 11%;
+        }
+
+        .parameter:nth-child(3) {
+            margin-right: 20.6%;
+        }
+
+        .parameter:last-child {
+            margin-right: 0;
+        }
+    }
+}
 
 </style>
