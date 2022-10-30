@@ -9,8 +9,8 @@
                            :style="isAvailStart ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
                     <label for="from" class="from__label">Откуда</label>
                     <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
-                        <button class="element-button" v-for="nameStation in arrStartStation"
-                                :key="nameStation.station_name">
+                        <button @click="addStartStation(nameStation.station_name)" class="element-button" v-for="nameStation in arrStartStation"
+                                :key="nameStation.station_yandex_code">
                             {{ nameStation.station_name }}
                         </button>
                     </div>
@@ -23,8 +23,8 @@
                            :style="isAvailEnd ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
                     <label for="to" class="to__label">Куда</label>
                     <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
-                        <button class="element-button" v-for="nameStation in arrEndStation"
-                                :key="nameStation.station_name">
+                        <button @click="addEndStation(nameStation.station_name)" class="element-button" v-for="nameStation in arrEndStation"
+                                :key="nameStation.station_yandex_code">
                             {{ nameStation.station_name }}
                         </button>
                     </div>
@@ -73,56 +73,76 @@ export default {
             arrEndStation: [],
             isAvailEnd: false,
             isResultHidden: true,
+            selectStartStation: false,
+            selectEndStation: false,
         };
     },
     methods: {
-        async changeStartStation() { //Функция для загрузки подсказки набора станций
+        async changeStartStation() { //Функция для загрузки подсказки набора стартовых станций
             this.startStation = this.startStation.trimStart();
-            if (this.startStation != '') {
+            if (this.startStation != '' && !this.selectStartStation) {
                 try {
                     const response = await axios.get(this.findURL + this.startStation);
                     this.arrStartStation = response.data;
                     if (this.arrStartStation.length !== 0) {
                         this.isAvailStart = true;
                     } else {
+                        this.arrStartStation = [];
                         this.isAvailStart = false;
                     }
                 } catch (e) {
                     alert('Error: ' + e);
                 }
             } else {
+                this.selectStartStation = false;
                 this.isAvailStart = false;
                 this.arrStartStation = [];
             }
         },
-        async changeEndStation() { //Функция для загрузки подсказки набора станций
+        async changeEndStation() { //Функция для загрузки подсказки набора конечных станций
             this.endStation = this.endStation.trimStart();
-            if (this.endStation != '') {
+            if (this.endStation != '' && !this.selectEndStation) {
                 try {
                     const response = await axios.get(this.findURL + this.endStation);
                     this.arrEndStation = response.data;
                     if (this.arrEndStation.length !== 0) {
                         this.isAvailEnd = true;
                     } else {
+                        this.arrEndStation = [];
                         this.isAvailEnd = false;
                     }
                 } catch (e) {
                     alert('Error: ' + e);
                 }
             } else {
+                this.selectEndStation = false;
                 this.isAvailEnd = false;
                 this.arrEndStation = [];
             }
         },
         clickStartStation() {
+            this.selectStartStation = false;
             this.arrEndStation = [];
             this.isAvailEnd = false;
             this.changeStartStation();
         },
         clickEndStation() {
+            this.selectEndStation = false;
             this.arrStartStation = [];
             this.isAvailStart = false;
             this.changeEndStation();
+        },
+        addStartStation(station) {
+            this.selectStartStation = true;
+            this.startStation = station;
+            this.arrStartStation = [];
+            this.isAvailStart = false;
+        },
+        addEndStation(station) {
+            this.selectEndStation = true;
+            this.endStation = station;
+            this.arrEndStation = [];
+            this.isAvailEnd = false;
         },
         async getStation() { //Функция для получения списка станций
             let time = (new Date()).toLocaleString();
@@ -145,7 +165,7 @@ export default {
                     alert('Error: ' + e);
                 }
             }
-        }
+        },
     },
     watch: {
         startStation: function () {
@@ -154,6 +174,16 @@ export default {
         endStation: function () {
             this.changeEndStation();
         }
+    },
+    created() {
+        document.addEventListener('click', () => {
+            this.selectStartStation = false;
+            this.arrEndStation = [];
+            this.isAvailEnd = false;
+            this.selectEndStation = false;
+            this.arrStartStation = [];
+            this.isAvailStart = false;
+        });
     }
 };
 </script>
@@ -411,7 +441,7 @@ hr {
 
 .results-list {
     margin-bottom: 1em;
-
+    cursor: pointer;
     hr {
         margin: 0 5px 0 60px;
     }
