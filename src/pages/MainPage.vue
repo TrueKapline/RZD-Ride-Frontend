@@ -154,7 +154,7 @@ export default {
             this.isResultHidden = false;
             if ((this.startStation != '') || (this.endStation != '')) {
                 try {
-                    const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=2022-11-10');
+                    const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=2022-11-01');
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
                     this.arrRoute.map(el => {

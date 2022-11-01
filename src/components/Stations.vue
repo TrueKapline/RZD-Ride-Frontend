@@ -1,7 +1,7 @@
 <template>
     <div class="station-info">
-        <h1 class="status-title">{{status}}</h1>
-        <span class="status-info">Следующая остановка – Горка</span>
+        <h1 class="status-title">{{status[0]}}</h1>
+        <span class="status-info">{{status[1]}}</span>
     </div>
 </template>
 
@@ -10,7 +10,7 @@ export default {
     name: "Status",
     props: {
         status: {
-            type: String,
+            type: Array,
         }
     }
 };

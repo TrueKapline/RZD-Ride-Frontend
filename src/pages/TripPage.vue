@@ -31,7 +31,7 @@ export default {
             interval: null,
             count: 0,
             time: '',
-            status: '',
+            status: ['', ''],
         }
     },
     methods: {
@@ -42,24 +42,39 @@ export default {
                 this.time = timer.slice(12, 20);
                 const response = await axios.get(this.baseURL + '?uid=' + this.$route.params.uid);
                 this.arrStop = response.data.stops;
-                if (this.arrStop[0].departure > timerFormat) this.status = "Поезд ещё не выехал"
-                if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status = "Поезд уже закончил свой маршрут"
+                if (this.arrStop[0].departure > timerFormat) this.status[0] = "Поезд ещё не выехал"
+                if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status[0] = "Поезд уже закончил свой маршрут" //Следующая остановка – Горка
                 console.log(this.arrStop);
-                this.arrStop.forEach(el => {
+                this.arrStop.forEach((el, index) => {
                     if (el.arrival) {
                         el.arrivalShow = el.arrival.slice(11, 16);
                     }
                     if (el.departure) {
                         el.departureShow = el.departure.slice(11, 16);
                     }
+                    if (el.departure > timerFormat && el.arrival < timerFormat) {
+                        this.status[0] = "Стоянка на станции " + el.title;
+                        if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                    }
+                    else if ((index < this.arrStop.length - 1) && (el.departure < timerFormat)) {
+                        this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
+                        if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                    }
+                    
                 })
                 this.interval = setInterval(() => {
                     timer = (new Date()).toLocaleString();
                     timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
                     this.time = timer.slice(12, 20);
                     this.arrStop.forEach((el, index) => {
-                        if (el.departure > timerFormat && el.arrival < timerFormat) this.status = "Стоянка на станции " + el.title
-                        else (index < (this.arrStop.length - 1))
+                        if (el.departure > timerFormat && el.arrival <= timerFormat) {
+                            this.status[0] = "Стоянка на станции " + el.title;
+                            if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                        }
+                        else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat)) {
+                            this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
+                            if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                        }
                     })
                 }, 1000);
             } catch(e) {
@@ -115,6 +130,8 @@ body {
     width: 100%;
     border-radius: 10px;
     background-color: $component-bg-color;
+    overflow: hidden;
+    overflow-y: auto;
 }
 
 .time-table, .map, .interesting {

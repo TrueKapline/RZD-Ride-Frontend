@@ -25,6 +25,7 @@ body {
     background-color: $bg-color;
     font-family: 'IBM Plex Sans', sans-serif;
     height: 100%;
+    overflow: hidden;
 }
 
 #app {
