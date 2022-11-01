@@ -26,7 +26,7 @@ export default {
     },
     data() {
         return {
-            baseURL: 'http://mypew.ru:3001/route_data/',
+            baseURL: 'http://mypew.ru:3001/stops',
             arrStop: [],
             interval: null,
             count: 0,
@@ -40,7 +40,7 @@ export default {
                 let timer = (new Date()).toLocaleString();
                 let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
                 this.time = timer.slice(12, 20);
-                const response = await axios.get(this.baseURL + this.$route.params.uid);
+                const response = await axios.get(this.baseURL + '?uid=' + this.$route.params.uid);
                 this.arrStop = response.data.stops;
                 if (this.arrStop[0].departure > timerFormat) this.status = "Поезд ещё не выехал"
                 if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status = "Поезд уже закончил свой маршрут"

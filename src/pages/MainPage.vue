@@ -65,8 +65,8 @@ export default {
         return {
             startStation: '',
             endStation: '',
-            baseURL: 'http://mypew.ru:3001/routes_suburbans_station_from_to/',
-            findURL: 'http://mypew.ru:3001/possible_station_names/',
+            baseURL: 'http://mypew.ru:3001/routes',
+            findURL: 'http://mypew.ru:3001/possible',
             arrRoute: [],
             arrStartStation: [],
             isAvailStart: false,
@@ -82,7 +82,7 @@ export default {
             this.startStation = this.startStation.trimStart();
             if (this.startStation != '' && !this.selectStartStation) {
                 try {
-                    const response = await axios.get(this.findURL + this.startStation);
+                    const response = await axios.get(this.findURL + '?station_name=' + this.startStation);
                     this.arrStartStation = response.data;
                     if (this.arrStartStation.length !== 0) {
                         this.isAvailStart = true;
@@ -103,7 +103,7 @@ export default {
             this.endStation = this.endStation.trimStart();
             if (this.endStation != '' && !this.selectEndStation) {
                 try {
-                    const response = await axios.get(this.findURL + this.endStation);
+                    const response = await axios.get(this.findURL + '?station_name=' + this.endStation);
                     this.arrEndStation = response.data;
                     if (this.arrEndStation.length !== 0) {
                         this.isAvailEnd = true;
@@ -154,7 +154,7 @@ export default {
             this.isResultHidden = false;
             if ((this.startStation != '') || (this.endStation != '')) {
                 try {
-                    const response = await axios.get(this.baseURL + this.startStation + '/' + this.endStation + '/' + date);
+                    const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=2022-11-10');
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
                     this.arrRoute.map(el => {
