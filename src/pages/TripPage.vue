@@ -56,7 +56,7 @@ export default {
                         this.status[0] = "Стоянка на станции " + el.title;
                         if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                     }
-                    else if ((index < this.arrStop.length - 1) && (el.departure < timerFormat)) {
+                    else if ((index < this.arrStop.length - 1) && (el.departure < timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
                         this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
                         if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                     }
@@ -71,7 +71,7 @@ export default {
                             this.status[0] = "Стоянка на станции " + el.title;
                             if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                         }
-                        else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat)) {
+                        else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
                             this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
                             if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                         }

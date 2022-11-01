@@ -80,15 +80,18 @@ export default {
     methods: {
         async changeStartStation() { //Функция для загрузки подсказки набора стартовых станций
             this.startStation = this.startStation.trimStart();
+            let bufferStartStation = this.startStation;
             if (this.startStation != '' && !this.selectStartStation) {
                 try {
-                    const response = await axios.get(this.findURL + '?station_name=' + this.startStation);
-                    this.arrStartStation = response.data;
-                    if (this.arrStartStation.length !== 0) {
-                        this.isAvailStart = true;
-                    } else {
-                        this.arrStartStation = [];
-                        this.isAvailStart = false;
+                    const response = await axios.get(this.findURL + '?station_name=' + this.startStation.trim());
+                    if (bufferStartStation === this.startStation) {
+                        this.arrStartStation = response.data;
+                        if (this.arrStartStation.length !== 0) {
+                            this.isAvailStart = true;
+                        } else {
+                            this.arrStartStation = [];
+                            this.isAvailStart = false;
+                        }
                     }
                 } catch (e) {
                     alert('Error: ' + e);
@@ -101,15 +104,18 @@ export default {
         },
         async changeEndStation() { //Функция для загрузки подсказки набора конечных станций
             this.endStation = this.endStation.trimStart();
+            let bufferEndStation = this.endStation;
             if (this.endStation != '' && !this.selectEndStation) {
                 try {
                     const response = await axios.get(this.findURL + '?station_name=' + this.endStation);
-                    this.arrEndStation = response.data;
-                    if (this.arrEndStation.length !== 0) {
-                        this.isAvailEnd = true;
-                    } else {
-                        this.arrEndStation = [];
-                        this.isAvailEnd = false;
+                    if (bufferEndStation === this.endStation) {
+                        this.arrEndStation = response.data;
+                        if (this.arrEndStation.length !== 0) {
+                            this.isAvailEnd = true;
+                        } else {
+                            this.arrEndStation = [];
+                            this.isAvailEnd = false;
+                        }
                     }
                 } catch (e) {
                     alert('Error: ' + e);
@@ -120,25 +126,25 @@ export default {
                 this.arrEndStation = [];
             }
         },
-        clickStartStation() {
+        clickStartStation() { //При нажатии на инпут стартовой станции
             this.selectStartStation = false;
             this.arrEndStation = [];
             this.isAvailEnd = false;
             this.changeStartStation();
         },
-        clickEndStation() {
+        clickEndStation() { //При нажатии на инпут конечной станции
             this.selectEndStation = false;
             this.arrStartStation = [];
             this.isAvailStart = false;
             this.changeEndStation();
         },
-        addStartStation(station) {
+        addStartStation(station) { //При выборе какой-то начальной станции
             this.selectStartStation = true;
             this.startStation = station;
             this.arrStartStation = [];
             this.isAvailStart = false;
         },
-        addEndStation(station) {
+        addEndStation(station) { //При выборе какой-то конечно станции
             this.selectEndStation = true;
             this.endStation = station;
             this.arrEndStation = [];
