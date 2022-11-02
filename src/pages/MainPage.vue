@@ -29,7 +29,7 @@
                         </button>
                     </div>
                 </div>
-                <input type="date" id="date" class="date">
+                <input v-model="selectDate" type="date" id="date" class="date">
                 <button class="search-button" @click="getStation()">Найти маршруты</button>
             </div>
         </div>
@@ -75,6 +75,7 @@ export default {
             isResultHidden: true,
             selectStartStation: false,
             selectEndStation: false,
+            selectDate: '',
         };
     },
     methods: {
@@ -158,9 +159,9 @@ export default {
             this.arrEndStation = [];
             this.isAvailStart = false;
             this.isResultHidden = false;
-            if ((this.startStation != '') || (this.endStation != '')) {
+            if ((this.startStation != '') && (this.endStation != '') && (this.selectDate != '')) {
                 try {
-                    const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=2022-11-01');
+                    const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=' + this.selectDate);
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
                     this.arrRoute.map(el => {
