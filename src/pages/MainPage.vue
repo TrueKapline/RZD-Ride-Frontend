@@ -5,8 +5,7 @@
             <div class="form">
                 <div class="from">
                     <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off" @click="clickStartStation()"
-                           v-model="startStation"
-                           :style="isAvailStart ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
+                           v-model="startStation">
                     <label for="from" class="from__label">Откуда</label>
                     <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
                         <button @click="addStartStation(nameStation.station_name)" class="element-button" v-for="nameStation in arrStartStation"
@@ -16,11 +15,10 @@
                     </div>
                 </div>
 
-                <img src="@/icons/arrow-large.svg" alt="" draggable="false" @click="changeStation()">
+                <img src="@/icons/arrows.svg" alt="" draggable="false" @click="changeStation()">
                 <div class="to">
                     <input type="text" id="to" class="to__input" placeholder=" " autocomplete="off" @click="clickEndStation()"
-                           v-model="endStation"
-                           :style="isAvailEnd ? 'border-radius: 10px 10px 0 0' : 'border-radius: 10px'">
+                           v-model="endStation">
                     <label for="to" class="to__label">Куда</label>
                     <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
                         <button @click="addEndStation(nameStation.station_name)" class="element-button" v-for="nameStation in arrEndStation"
@@ -229,11 +227,12 @@ main {
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 0 3.1em;
+    padding: 0 17.5em;
 }
 
 h1 {
     color: $main-color;
+    font-size: 24px;
 }
 
 img {
@@ -257,23 +256,21 @@ img {
     margin: 0 60px 40px;
 }
 
-.from {
+.from, .to {
     position: relative;
-    width: 19.9%;
-    margin-right: 1%;
+    margin-right: 1.6%;
 
     &__input {
-        width: calc(100% - 2em - 6px);
-        height: 74px;
+        width: calc(270px - 2em - 6px);
+        height: 65px;
         top: 0;
         left: 0;
         border: 3px solid $main-color;
-        color: $main-color;
         border-radius: 10px;
+        color: $main-color;
         font-family: inherit;
-        font-size: 26px;
+        font-size: 20px;
         outline: none;
-        background: none;
         padding: 0 1em;
         user-select: none;
     }
@@ -281,18 +278,22 @@ img {
     &__label {
         position: absolute;
         left: 1.1em;
-        top: 0.85em;
-        font-size: 26px;
+        top: 1.1em;
+        font-size: 20px;
         padding: 0 0.3rem;
         color: $input-grey;
         cursor: text;
-        transition: top 200ms cubic-bezier(0.5, 0, 0, 1),
-        left 200ms cubic-bezier(0.5, 0, 0, 1),
-        font-size 200ms cubic-bezier(0.5, 0, 0, 1),
+        transition: top 150ms cubic-bezier(0.5, 0, 0, 1),
+        left 150ms cubic-bezier(0.5, 0, 0, 1),
+        font-size 150ms cubic-bezier(0.5, 0, 0, 1),
         color 500ms cubic-bezier(0.5, 0, 0, 1);
         background-color: $white;
         user-select: none;
     }
+}
+
+.to {
+    margin: 0 3.3% 0 1.6%;
 }
 
 .from__input:focus ~ .from__label,
@@ -301,44 +302,6 @@ img {
     left: 8%;
     font-size: 16px;
     color: $main-color;
-}
-
-.to {
-    position: relative;
-    width: 19.9%;
-    margin: 0 3% 0 1%;
-
-    &__input {
-        width: calc(100% - 2em - 6px);
-        height: 74px;
-        top: 0;
-        left: 0;
-        border: 3px solid $main-color;
-        color: $main-color;
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 26px;
-        outline: none;
-        background: none;
-        padding: 0 1em;
-        user-select: none;
-    }
-
-    &__label {
-        position: absolute;
-        left: 1.1em;
-        top: 0.85em;
-        font-size: 26px;
-        padding: 0 0.3rem;
-        color: $input-grey;
-        cursor: text;
-        transition: top 200ms cubic-bezier(0.5, 0, 0, 1),
-        left 200ms cubic-bezier(0.5, 0, 0, 1),
-        font-size 200ms cubic-bezier(0.5, 0, 0, 1),
-        color 500ms cubic-bezier(0.5, 0, 0, 1);
-        background-color: $white;
-        user-select: none;
-    }
 }
 
 .to__input:focus ~ .to__label,
@@ -350,14 +313,15 @@ img {
 }
 
 .date {
-    width: calc(19.9% - 2em - 6px);
-    height: 74px;
+    width: calc(270px - 2em - 6px);
+    height: 65px;
     border: 3px solid $main-color;
     color: $main-color;
     border-radius: 10px;
     font-family: inherit;
-    font-size: 26px;
+    font-size: 20px;
     padding: 0 1em 0 1em;
+    margin-right: 4%;
 }
 
 .search-button {
@@ -365,12 +329,11 @@ img {
     border: 3px solid $accent-red;
     border-radius: 10px;
     color: $white;
-    width: 19.9%;
-    height: 80px;
+    width: 270px;
+    height: 71px;
     font-family: inherit;
-    font-size: 26px;
+    font-size: 20px;
     transition: 500ms cubic-bezier(0.5, 0, 0, 1);
-    margin-left: auto;
     user-select: none;
     outline: none;
 
@@ -385,10 +348,10 @@ img {
     position: absolute;
     top: 77px;
     background-color: $white;
-    border-radius: 0 0 10px 10px;
+    border-radius: 10px;
     border: 3px solid $main-color;
     width: calc(100% - 6px);
-    max-height: 250px;
+    max-height: 235px;
     overflow: hidden;
     overflow-y: scroll;
 }
@@ -399,16 +362,15 @@ img {
     width: 100%;
     text-align: left;
     font-family: inherit;
-    font-size: 26px;
+    font-size: 20px;
     background-color: $white;
-    border-radius: 10px;
-    padding: .5em 1em .6em;
+    padding: .5em 1em .5em;
     color: $main-color;
     outline: none;
 
     &:hover {
-        text-decoration: underline;
         cursor: pointer;
+        text-decoration: underline;
     }
 }
 
