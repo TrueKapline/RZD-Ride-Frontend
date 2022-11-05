@@ -200,6 +200,8 @@ export default {
         }
     },
     created() {
+        let time = (new Date()).toLocaleDateString();
+        this.selectDate = time.slice(6, 10) + '-' + time.slice(3, 5) + '-' + time.slice(0, 2);
         document.addEventListener('click', () => {
             this.selectStartStation = false;
             this.arrEndStation = [];
