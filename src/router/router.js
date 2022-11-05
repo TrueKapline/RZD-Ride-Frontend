@@ -4,8 +4,10 @@ import MainPage from '@/pages/MainPage.vue'
 
 const routes = [
     {
-        path: '/trip/:uid',
+        path: '/trip/:uid/:date',
+        name: 'TripPage',
         component: TripPage,
+        props: true,
     },
     {
         path: '/',

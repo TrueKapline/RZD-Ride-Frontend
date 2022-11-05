@@ -16,7 +16,7 @@
                     </div>
                 </div>
 
-                <img src="@/icons/arrow-large.svg" alt="" draggable="false">
+                <img src="@/icons/arrow-large.svg" alt="" draggable="false" @click="changeStation()">
                 <div class="to">
                     <input type="text" id="to" class="to__input" placeholder=" " autocomplete="off" @click="clickEndStation()"
                            v-model="endStation"
@@ -43,7 +43,7 @@
             <hr>
             <div class="wrapper">
                 <div class="results-list" v-for="route in arrRoute" :key="route.uid" :value="route.uid"
-                     @click="$router.push('/trip/'+route.uid);">
+                     @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
                     <div class="parameters">
                         <span class="parameter">{{ route.depShow }}</span>
                         <span class="parameter">{{ route.arrShow }}</span>
@@ -152,8 +152,6 @@ export default {
             this.isAvailEnd = false;
         },
         async getStation() { //Функция для получения списка станций
-            let time = (new Date()).toLocaleString();
-            let date = time.slice(6, 10) + '-' + time.slice(3, 5) + '-' + time.slice(0, 2);
             this.arrStartStation = [];
             this.isAvailEnd = false;
             this.arrEndStation = [];
@@ -165,6 +163,7 @@ export default {
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
                     this.arrRoute.map(el => {
+                        el.hour = el.dep[21];
                         el.depShow = el.dep.slice(11, 16);
                         el.arrShow = el.arr.slice(11, 16);
                         let travelTime = (new Date(el.arr) - new Date(el.dep)) / 60000;
@@ -182,6 +181,17 @@ export default {
                 }
             }
         },
+        changeStation() {//Меняет местами станции
+            this.selectStartStation = true;
+            this.arrEndStation = [];
+            this.isAvailEnd = false;
+            this.selectEndStation = true;
+            this.arrStartStation = [];
+            this.isAvailStart = false;
+            let buffer = this.startStation;
+            this.startStation = this.endStation;
+            this.endStation = buffer;
+        }
     },
     watch: {
         startStation: function () {

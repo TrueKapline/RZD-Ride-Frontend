@@ -22,7 +22,15 @@ import Stations from "@/components/Stations";
 export default {
     components: {
         Stations,
-        Weather
+        Weather,
+    },
+    props: {
+        uid: {
+            type: String,
+        },
+        date: {
+            type: String,
+        },
     },
     data() {
         return {
@@ -37,10 +45,12 @@ export default {
     methods: {
         async loadTrip() {
             try {
-                let timer = (new Date()).toLocaleString();
+                let buffer = (new Date());
+                let timer = (new Date(buffer.getUTCFullYear(), buffer.getUTCMonth(), buffer.getUTCDate(), buffer.getUTCHours() + parseInt(this.date[21]), buffer.getUTCMinutes(), buffer.getUTCSeconds())).toLocaleString();
+                console.log(timer);
                 let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
                 this.time = timer.slice(12, 20);
-                const response = await axios.get(this.baseURL + '?uid=' + this.$route.params.uid);
+                const response = await axios.get(this.baseURL + '?uid=' + this.uid + '&date=' + this.date.slice(0,10));
                 this.arrStop = response.data.stops;
                 if (this.arrStop[0].departure > timerFormat) this.status[0] = "Поезд ещё не выехал"
                 if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status[0] = "Поезд уже закончил свой маршрут" //Следующая остановка – Горка
@@ -63,8 +73,9 @@ export default {
                     
                 })
                 this.interval = setInterval(() => {
-                    timer = (new Date()).toLocaleString();
-                    timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
+                    let buffer = (new Date());
+                    let timer = (new Date(buffer.getUTCFullYear(), buffer.getUTCMonth(), buffer.getUTCDate(), buffer.getUTCHours() + parseInt(this.date[21]), buffer.getUTCMinutes(), buffer.getUTCSeconds())).toLocaleString();
+                    let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
                     this.time = timer.slice(12, 20);
                     this.arrStop.forEach((el, index) => {
                         if (el.departure > timerFormat && el.arrival <= timerFormat) {
@@ -83,7 +94,6 @@ export default {
         }
     },
     created() {
-        //Раскомментить
         this.loadTrip();
     }
 }
