@@ -1,7 +1,7 @@
 <template>
     <div class="status window">
         <Stations v-bind:status="this.status"/>
-        <Weather v-bind:time="this.time"/>
+        <Weather v-bind:timeWeather="this.timeWeather"/>
     </div>
     <div class="lower-part">
         <div class="time-table window">
@@ -34,22 +34,22 @@ export default {
     },
     data() {
         return {
-            baseURL: 'https://mypew.ru:3001/stops',
-            arrStop: [],
-            interval: null,
-            count: 0,
-            time: '',
-            status: ['', ''],
+            baseURL: 'https://mypew.ru:3001/stops', //Ссылка на маршруты
+            arrStop: [], //Массив остановок
+            interval: null, //Интервал
+            timeWeather: ['', ''], //Время, погода
+            status: ['', ''], //Маршрут сейчас, следующая остановка
+            baseURLWeather: 'https://mypew.ru:3001/weather', //Ссылка на погоду
+            stationNow: '',
         }
     },
     methods: {
-        async loadTrip() {
+        async loadTrip() { //Загрузка маршрута
             try {
                 let buffer = (new Date());
                 let timer = (new Date(buffer.getUTCFullYear(), buffer.getUTCMonth(), buffer.getUTCDate(), buffer.getUTCHours() + parseInt(this.date[21]), buffer.getUTCMinutes(), buffer.getUTCSeconds())).toLocaleString();
-                console.log(timer);
                 let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
-                this.time = timer.slice(12, 20);
+                this.timeWeather[0] = timer.slice(12, 20);
                 const response = await axios.get(this.baseURL + '?uid=' + this.uid + '&date=' + this.date.slice(0,10));
                 this.arrStop = response.data.stops;
                 if (this.arrStop[0].departure > timerFormat) this.status[0] = "Поезд ещё не выехал"
@@ -64,10 +64,26 @@ export default {
                     }
                     if (el.departure > timerFormat && el.arrival < timerFormat) {
                         this.status[0] = "Стоянка на станции " + el.title;
+                        if (this.stationNow != el.title) {
+                            try {
+                                this.loadWeather(el.title);
+                                this.stationNow = el.title;
+                            } catch(e) {
+                                alert('Error: ' + e);
+                            }
+                        }
                         if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                     }
                     else if ((index < this.arrStop.length - 1) && (el.departure < timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
                         this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
+                        if (this.stationNow == '' && index > 0) {
+                            try {
+                                this.loadWeather(el.title);
+                                this.stationNow = el.title;
+                            } catch(e) {
+                                alert('Error: ' + e);
+                            }
+                        }
                         if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                     }
                     
@@ -76,21 +92,42 @@ export default {
                     let buffer = (new Date());
                     let timer = (new Date(buffer.getUTCFullYear(), buffer.getUTCMonth(), buffer.getUTCDate(), buffer.getUTCHours() + parseInt(this.date[21]), buffer.getUTCMinutes(), buffer.getUTCSeconds())).toLocaleString();
                     let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
-                    this.time = timer.slice(12, 20);
+                    this.timeWeather[0] = timer.slice(12, 20);
                     this.arrStop.forEach((el, index) => {
                         if (el.departure > timerFormat && el.arrival <= timerFormat) {
                             this.status[0] = "Стоянка на станции " + el.title;
+                            if (this.stationNow != el.title) {
+                                try {
+                                    this.loadWeather(el.title);
+                                    this.stationNow = el.title;
+                                } catch(e) {
+                                    alert('Error: ' + e);
+                                }
+                            }
                             if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                         }
                         else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
                             this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
+                            if (this.stationNow == '') {
+                                try {
+                                    this.loadWeather(el.title);
+                                    this.stationNow = el.title;
+                                } catch(e) {
+                                    alert('Error: ' + e);
+                                }
+                            }
                             if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                         }
-                    })
+                    });
                 }, 1000);
             } catch(e) {
                 alert('Error: ' + e);
             }
+        },
+        async loadWeather(title) {
+            const responseWeather = await axios.get(this.baseURLWeather + '?type_info=fact&station_name=' + title);
+            this.timeWeather[1] = responseWeather.data;
+            console.log(this.timeWeather[1]);
         }
     },
     created() {

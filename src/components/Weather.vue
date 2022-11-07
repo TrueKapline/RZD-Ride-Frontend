@@ -1,9 +1,9 @@
 <template>
     <div class="time-and-weather">
-        <h1 class="time">{{time}}</h1>
+        <h1 class="time">{{timeWeather[0]}}</h1>
         <div class="weather">
             <img src="@/icons/sun-icon.svg" alt="" class="weather-icon">
-            <span class="weather-text">Ясно, 15°С</span>
+            <span class="weather-text">Ясно, {{weather}}</span>
         </div>
     </div>
 </template>
@@ -12,13 +12,20 @@
 export default {
     name: "Weather",
     props: {
-        time: {
-            type: String,
+        timeWeather: {
+            type: Array,
         }
     },
     data() {
         return {
-            
+            weather: '15°С',
+        }
+    },
+    watch: {
+        timeWeather: function() {
+            console.log(this.timeWeather);
+            console.log('robit');
+            //this.weather = `${this.timeWeather[1].temp}°С`;
         }
     }
 };

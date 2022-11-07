@@ -5,7 +5,7 @@
             <div class="form">
                 <div class="from">
                     <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off"
-                           @click="clickStartStation()" v-model="startStation">
+                           @click="clickStartStation()" v-model="startStation" @keyup.enter="enterClicked()">
                     <label for="from" class="from__label">Откуда</label>
                     <div class="from__hint">{{fromHint}}</div>
                     <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
@@ -16,11 +16,11 @@
                     </div>
                 </div>
 
-                <img src="@/icons/arrows.svg" alt="" draggable="false" @click="changeStation()">
+                <img src="@/icons/arrows.svg" alt="" draggable="false" @click="changeStation()" style="cursor: pointer">
                 <div class="to">
                     <input type="text" id="to" class="to__input" placeholder=" " autocomplete="off"
                            @click="clickEndStation()"
-                           v-model="endStation">
+                           v-model="endStation" @keyup.enter="enterClicked()">
                     <label for="to" class="to__label">Куда</label>
                     <div class="to__hint">{{toHint}}</div>
                     <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
@@ -178,10 +178,10 @@ export default {
             this.isAvailEnd = false;
             this.arrEndStation = [];
             this.isAvailStart = false;
-            this.isResultHidden = false;
             if ((this.startStation != '') && (this.endStation != '') && (this.selectDate != '')) {
                 try {
                     const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=' + this.selectDate);
+                    this.isResultHidden = false;
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
                     this.arrRoute.map(el => {
@@ -213,6 +213,16 @@ export default {
             let buffer = this.startStation;
             this.startStation = this.endStation;
             this.endStation = buffer;
+        },
+        enterClicked() { //Заполняет инпуты на нажатие Enter
+            if (this.fromHint != '') {
+                this.startStation = this.fromHint;
+                this.fromHint = '';
+            }
+            if (this.toHint != '') {
+                this.endStation = this.toHint;
+                this.toHint = '';
+            }
         }
     },
     watch: {
