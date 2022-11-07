@@ -7,7 +7,7 @@
                     <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off"
                            @click="clickStartStation()" v-model="startStation">
                     <label for="from" class="from__label">Откуда</label>
-                    <div class="from__hint"></div>
+                    <div class="from__hint">{{fromHint}}</div>
                     <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
                         <button @click="addStartStation(nameStation.station_name)" class="element-button"
                                 v-for="nameStation in arrStartStation" :key="nameStation.station_yandex_code">
@@ -22,7 +22,7 @@
                            @click="clickEndStation()"
                            v-model="endStation">
                     <label for="to" class="to__label">Куда</label>
-                    <div class="to__hint"></div>
+                    <div class="to__hint">{{toHint}}</div>
                     <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
                         <button @click="addEndStation(nameStation.station_name)" class="element-button"
                                 v-for="nameStation in arrEndStation"
@@ -65,19 +65,21 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            startStation: '',
-            endStation: '',
-            baseURL: 'http://mypew.ru:3001/routes',
-            findURL: 'http://mypew.ru:3001/possible',
-            arrRoute: [],
-            arrStartStation: [],
-            isAvailStart: false,
-            arrEndStation: [],
-            isAvailEnd: false,
-            isResultHidden: true,
-            selectStartStation: false,
-            selectEndStation: false,
-            selectDate: '',
+            startStation: '', //Начальная станция
+            endStation: '', //Конечная станция
+            baseURL: 'http://mypew.ru:3001/routes', //Для запроса маршрутов
+            findURL: 'http://mypew.ru:3001/possible', //Для запроса подсказок
+            arrRoute: [], //Массив маршрутов
+            arrStartStation: [], //Массив начальных станций для подсказки
+            isAvailStart: false, //Показывать подсказку начальных станция
+            arrEndStation: [], //Массив конечных станция для подсказки
+            isAvailEnd: false, //Показывать подскзку конечных станций
+            isResultHidden: true, //Получен ли результат маршрутов
+            selectStartStation: false, //Выбран инпут начальной станция
+            selectEndStation: false, //Выбран инпут конечной станция
+            selectDate: '', //Выбранная дата
+            fromHint: '', //Подсказка для начально станции
+            toHint: '', //Подсказка для конечной станции
         };
     },
     methods: {
@@ -86,12 +88,19 @@ export default {
             let bufferStartStation = this.startStation;
             if (this.startStation != '' && !this.selectStartStation) {
                 try {
+                    if (this.arrStartStation.length !== 0) {
+                        this.fromHint = this.startStation + this.arrStartStation[0].station_name.slice(this.startStation.length);
+                    } else {
+                        this.fromHint = '';
+                    }
                     const response = await axios.get(this.findURL + '?station_name=' + this.startStation.trim());
                     if (bufferStartStation === this.startStation) {
                         this.arrStartStation = response.data;
                         if (this.arrStartStation.length !== 0) {
                             this.isAvailStart = true;
+                            this.fromHint = this.startStation + this.arrStartStation[0].station_name.slice(this.startStation.length);
                         } else {
+                            this.fromHint = '';
                             this.arrStartStation = [];
                             this.isAvailStart = false;
                         }
@@ -100,6 +109,7 @@ export default {
                     alert('Error: ' + e);
                 }
             } else {
+                this.fromHint = '';
                 this.selectStartStation = false;
                 this.isAvailStart = false;
                 this.arrStartStation = [];
@@ -110,12 +120,15 @@ export default {
             let bufferEndStation = this.endStation;
             if (this.endStation != '' && !this.selectEndStation) {
                 try {
+                    this.toHint = '';
                     const response = await axios.get(this.findURL + '?station_name=' + this.endStation);
                     if (bufferEndStation === this.endStation) {
                         this.arrEndStation = response.data;
                         if (this.arrEndStation.length !== 0) {
                             this.isAvailEnd = true;
+                            this.toHint = this.endStation + this.arrEndStation[0].station_name.slice(this.endStation.length);
                         } else {
+                            this.toHint = '';
                             this.arrEndStation = [];
                             this.isAvailEnd = false;
                         }
@@ -124,6 +137,7 @@ export default {
                     alert('Error: ' + e);
                 }
             } else {
+                this.toHint = '';
                 this.selectEndStation = false;
                 this.isAvailEnd = false;
                 this.arrEndStation = [];
