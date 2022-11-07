@@ -4,12 +4,13 @@
             <h1 class="header">Расписание электричек</h1>
             <div class="form">
                 <div class="from">
-                    <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off" @click="clickStartStation()"
-                           v-model="startStation">
+                    <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off"
+                           @click="clickStartStation()" v-model="startStation">
                     <label for="from" class="from__label">Откуда</label>
+                    <div class="from__hint"></div>
                     <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
-                        <button @click="addStartStation(nameStation.station_name)" class="element-button" v-for="nameStation in arrStartStation"
-                                :key="nameStation.station_yandex_code">
+                        <button @click="addStartStation(nameStation.station_name)" class="element-button"
+                                v-for="nameStation in arrStartStation" :key="nameStation.station_yandex_code">
                             {{ nameStation.station_name }}
                         </button>
                     </div>
@@ -17,11 +18,14 @@
 
                 <img src="@/icons/arrows.svg" alt="" draggable="false" @click="changeStation()">
                 <div class="to">
-                    <input type="text" id="to" class="to__input" placeholder=" " autocomplete="off" @click="clickEndStation()"
+                    <input type="text" id="to" class="to__input" placeholder=" " autocomplete="off"
+                           @click="clickEndStation()"
                            v-model="endStation">
                     <label for="to" class="to__label">Куда</label>
+                    <div class="to__hint"></div>
                     <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
-                        <button @click="addEndStation(nameStation.station_name)" class="element-button" v-for="nameStation in arrEndStation"
+                        <button @click="addEndStation(nameStation.station_name)" class="element-button"
+                                v-for="nameStation in arrEndStation"
                                 :key="nameStation.station_yandex_code">
                             {{ nameStation.station_name }}
                         </button>
@@ -263,6 +267,7 @@ img {
     margin-right: 1.6%;
 
     &__input {
+        position: relative;
         width: calc(270px - 2em - 6px);
         height: 65px;
         top: 0;
@@ -275,6 +280,8 @@ img {
         outline: none;
         padding: 0 1em;
         user-select: none;
+        background: none;
+        z-index: 1;
     }
 
     &__label {
@@ -291,6 +298,17 @@ img {
         color 500ms cubic-bezier(0.5, 0, 0, 1);
         background-color: $white;
         user-select: none;
+        z-index: 1;
+    }
+
+    &__hint {
+        position: absolute;
+        z-index: 0;
+        left: 1.1em;
+        top: 1.1em;
+        font-size: 20px;
+        padding: 0 0.1rem;
+        color: $input-grey;
     }
 }
 
@@ -432,6 +450,7 @@ hr {
 .results-list {
     margin-bottom: 1em;
     cursor: pointer;
+
     hr {
         margin: 0 5px 0 60px;
     }
