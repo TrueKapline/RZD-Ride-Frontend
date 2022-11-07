@@ -34,7 +34,7 @@ export default {
     },
     data() {
         return {
-            baseURL: 'http://mypew.ru:3001/stops',
+            baseURL: 'https://mypew.ru:3001/stops',
             arrStop: [],
             interval: null,
             count: 0,

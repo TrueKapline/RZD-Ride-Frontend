@@ -67,8 +67,8 @@ export default {
         return {
             startStation: '', //Начальная станция
             endStation: '', //Конечная станция
-            baseURL: 'http://mypew.ru:3001/routes', //Для запроса маршрутов
-            findURL: 'http://mypew.ru:3001/possible', //Для запроса подсказок
+            baseURL: 'https://mypew.ru:3001/routes', //Для запроса маршрутов
+            findURL: 'https://mypew.ru:3001/possible', //Для запроса подсказок
             arrRoute: [], //Массив маршрутов
             arrStartStation: [], //Массив начальных станций для подсказки
             isAvailStart: false, //Показывать подсказку начальных станция
@@ -89,7 +89,7 @@ export default {
             if (this.startStation != '' && !this.selectStartStation) {
                 try {
                     if (this.arrStartStation.length !== 0) {
-                        this.fromHint = this.startStation + this.arrStartStation[0].station_name.slice(this.startStation.length);
+                        this.fromHint = this.startStation.trim() + this.arrStartStation[0].station_name.slice(this.startStation.trim().length);
                     } else {
                         this.fromHint = '';
                     }
@@ -98,7 +98,7 @@ export default {
                         this.arrStartStation = response.data;
                         if (this.arrStartStation.length !== 0) {
                             this.isAvailStart = true;
-                            this.fromHint = this.startStation + this.arrStartStation[0].station_name.slice(this.startStation.length);
+                            this.fromHint = this.startStation.trim() + this.arrStartStation[0].station_name.slice(this.startStation.trim().length);
                         } else {
                             this.fromHint = '';
                             this.arrStartStation = [];
@@ -120,13 +120,17 @@ export default {
             let bufferEndStation = this.endStation;
             if (this.endStation != '' && !this.selectEndStation) {
                 try {
-                    this.toHint = '';
+                    if (this.arrEndStation.length !== 0) {
+                        this.toHint = this.endStation.trim() + this.arrEndStation[0].station_name.slice(this.endStation.trim().length);
+                    } else {
+                        this.toHint = '';
+                    }
                     const response = await axios.get(this.findURL + '?station_name=' + this.endStation);
                     if (bufferEndStation === this.endStation) {
                         this.arrEndStation = response.data;
                         if (this.arrEndStation.length !== 0) {
                             this.isAvailEnd = true;
-                            this.toHint = this.endStation + this.arrEndStation[0].station_name.slice(this.endStation.length);
+                            this.toHint = this.endStation.trim() + this.arrEndStation[0].station_name.slice(this.endStation.trim().length);
                         } else {
                             this.toHint = '';
                             this.arrEndStation = [];
@@ -160,12 +164,14 @@ export default {
             this.startStation = station;
             this.arrStartStation = [];
             this.isAvailStart = false;
+            this.fromHint = '';
         },
         addEndStation(station) { //При выборе какой-то конечно станции
             this.selectEndStation = true;
             this.endStation = station;
             this.arrEndStation = [];
             this.isAvailEnd = false;
+            this.toHint = '';
         },
         async getStation() { //Функция для получения списка станций
             this.arrStartStation = [];
@@ -227,6 +233,8 @@ export default {
             this.selectEndStation = false;
             this.arrStartStation = [];
             this.isAvailStart = false;
+            this.fromHint = '';
+            this.toHint = '';
         });
     }
 };
