@@ -50,7 +50,7 @@ export default {
                 'Дождь': 'rain-icon',
                 'Снег': 'snow-icon'
             },
-            pathImage: 'sun-icon',
+            pathImage: 'empty-icon',
         }
     },
     watch: {

@@ -7,7 +7,7 @@
                     <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off"
                            @click="clickStartStation()" v-model="startStation" @keyup.enter="enterClicked()">
                     <label for="from" class="from__label">Откуда</label>
-                    <div class="from__hint">{{fromHint}}</div>
+                    <div class="from__hint">{{ fromHint }}</div>
                     <div class="search-results" :style="isAvailStart ? 'display: block' : 'display: none'">
                         <button @click="addStartStation(nameStation.station_name)" class="element-button"
                                 v-for="nameStation in arrStartStation" :key="nameStation.station_yandex_code">
@@ -22,7 +22,7 @@
                            @click="clickEndStation()"
                            v-model="endStation" @keyup.enter="enterClicked()">
                     <label for="to" class="to__label">Куда</label>
-                    <div class="to__hint">{{toHint}}</div>
+                    <div class="to__hint">{{ toHint }}</div>
                     <div class="search-results" :style="isAvailEnd ? 'display: block' : 'display: none'">
                         <button @click="addEndStation(nameStation.station_name)" class="element-button"
                                 v-for="nameStation in arrEndStation"
@@ -35,26 +35,51 @@
                 <button class="search-button" @click="getStation()">Найти маршруты</button>
             </div>
         </div>
-        <div class="window results" :style="isResultHidden ? 'display: none' : ''">
-            <div class="headings">
-                <p>Отпр.</p>
-                <p>Приб.</p>
-                <p>В пути</p>
-                <p>Маршрут</p>
-            </div>
-            <hr>
-            <div class="wrapper">
-                <div class="results-list" v-for="route in arrRoute" :key="route.uid" :value="route.uid"
-                     @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
-                    <div class="parameters">
-                        <span class="parameter">{{ route.depShow }}</span>
-                        <span class="parameter">{{ route.arrShow }}</span>
-                        <span class="parameter">{{ route.travelTimeShow }}</span>
-                        <span class="parameter">{{ route.title }}</span>
-                    </div>
-                    <hr>
+        <div class="results" :style="isResultHidden ? 'display: none' : ''">
+            <div class="window info">
+                <div class="info__wrapper">
+                    <h1 class="info__header">Расписания по маршруту Ангарск – Иркутск-Пасс.</h1>
+                    <p class="info__date">15 ноября, вторник</p>
                 </div>
             </div>
+            <table class="search-segments">
+                <tbody class="search-segments__tbody">
+                <tr class="parameters" v-for="route in arrRoute" :key="route.uid" :value="route.uid">
+                    <td class="parameters__info">
+                        <div class="parameters__info__segment">
+                                <span class="parameters__info__segment__route"
+                                      @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
+                                    {{ route.title }}
+                                </span>
+                            <span class="parameters__info__segment__company">
+                                    {{ route.carrier.split(' ')[0] + ' ППК' }}
+                                </span>
+                        </div>
+                    </td>
+
+                    <td class="parameters__departure">
+                        <div class="parameters__departure__segment">
+                            <span class="parameters__departure__segment__time">{{ route.depShow }}</span>
+                            <span class="parameters__departure__segment__explain">Отбытие</span>
+                        </div>
+                    </td>
+
+                    <td class="parameters__total">
+                        <div class="parameters__total__segment">
+                            <span class="parameters__total__segment__time">{{ route.travelTimeShow }}</span>
+                        </div>
+                    </td>
+
+                    <td class="parameters__arrival">
+                        <div class="parameters__arrival__segment">
+                            <span class="parameters__arrival__segment__time">{{ route.arrShow }}</span>
+                            <span class="parameters__arrival__segment__explain">Прибытие</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
         </div>
     </main>
 </template>
@@ -447,67 +472,115 @@ img {
 }
 
 .results {
-    margin: 3em;
     max-height: 60vh;
+    width: 100%;
 }
 
-.wrapper {
-    max-height: 75%;
-    overflow: hidden;
-    overflow-y: scroll;
-    margin-right: 50px;
-}
+.info {
+    margin: 1.9em 0 0.95em;
 
-.headings {
-    display: flex;
-    margin: 2% 0 2% 8%;
+    &__wrapper {
+        padding: 1.9em 3.8em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-    p {
+    &__date {
+        font-family: "russianrail-g-pro-medium", serif;
+        font-size: 24px;
         color: $text-grey;
-        font-size: 32px;
-        margin-right: 11%;
-    }
-
-    p:nth-child(3) {
-        margin-right: 22%;
-    }
-
-    p:last-child {
-        margin-right: 0;
     }
 }
 
-hr {
-    border: 2px solid #929292;
-    border-top: none;
-    margin: 0 60px;
+.search-segments {
+    width: 100%;
 }
 
-.results-list {
+.parameters {
+    display: flex;
+    flex-direction: row;
     margin-bottom: 1em;
-    cursor: pointer;
+    background-color: $white;
+    border-radius: 10px;
+    padding: 1.9em 3.8em;
+    box-shadow: 0 4px 10px 2px #e0e0e3;
 
-    hr {
-        margin: 0 5px 0 60px;
+    &__info {
+        min-width: 30%;
+        margin-right: 0.5em;
+
+        &__segment {
+            display: flex;
+            flex-direction: column;
+
+            &__route {
+                color: $accent-red;
+                cursor: pointer;
+                font-size: 20px;
+            }
+
+            &__company {
+                color: $text-grey;
+                font-size: 16px;
+                margin-top: 5px;
+            }
+        }
     }
 
-    .parameters {
-        margin: 1% 0 1% 8%;
+    &__departure {
+        min-width: 13%;
+        margin: 0 0.5em;
 
-        .parameter {
-            color: $main-color;
-            font-size: 32px;
-            margin-right: 11%;
+        &__segment {
+            display: flex;
+            flex-direction: column;
+
+            &__time {
+                color: $main-color;
+                font-size: 20px;
+            }
+
+            &__explain {
+                color: $text-grey;
+                font-size: 16px;
+                margin-top: 5px;
+            }
         }
+    }
 
-        .parameter:nth-child(3) {
-            margin-right: 20.6%;
+    &__total {
+        min-width: 13%;
+        margin: 0 1em;
+
+        &__segment__time {
+            color: $text-grey;
+            font-size: 20px;
         }
+    }
 
-        .parameter:last-child {
-            margin-right: 0;
+    &__arrival {
+        min-width: 13%;
+        margin: 0 0.5em;
+
+        &__segment {
+            display: flex;
+            flex-direction: column;
+
+            &__time {
+                color: $main-color;
+                font-size: 20px;
+            }
+
+            &__explain {
+                color: $text-grey;
+                font-size: 16px;
+                margin-top: 5px;
+
+            }
         }
     }
 }
+
 
 </style>
