@@ -218,10 +218,14 @@ export default {
             if (this.fromHint != '') {
                 this.startStation = this.fromHint;
                 this.fromHint = '';
+                this.selectStartStation = true;
+                this.isAvailStart = false;
             }
             if (this.toHint != '') {
                 this.endStation = this.toHint;
                 this.toHint = '';
+                this.selectEndStation = true;
+                this.isAvailEnd = false;
             }
         }
     },
