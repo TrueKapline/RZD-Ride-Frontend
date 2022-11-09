@@ -124,6 +124,9 @@ export default {
                         if (this.arrStartStation.length !== 0) {
                             this.isAvailStart = true;
                             this.fromHint = this.startStation.trim() + this.arrStartStation[0].station_name.slice(this.startStation.trim().length);
+                            if (this.fromHint == this.startStation) {
+                                this.fromHint = '';
+                            }
                         } else {
                             this.fromHint = '';
                             this.arrStartStation = [];
@@ -156,6 +159,9 @@ export default {
                         if (this.arrEndStation.length !== 0) {
                             this.isAvailEnd = true;
                             this.toHint = this.endStation.trim() + this.arrEndStation[0].station_name.slice(this.endStation.trim().length);
+                            if (this.toHint == this.endStation) {
+                                this.toHint = '';
+                            }
                         } else {
                             this.toHint = '';
                             this.arrEndStation = [];
