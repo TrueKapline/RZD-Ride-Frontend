@@ -34,7 +34,7 @@ export default {
                 'moderate-rain': 'Дождь',
                 'heavy-rain': 'Дождь',
                 'continuous-heavy-rain': 'Дождь',
-                'showers': 'Ливень',
+                'showers': 'Дождь',
                 'wet-snow': 'Дождь со снегом',
                 'light-snow': 'Снег',
                 'snow': 'Снег',
@@ -48,7 +48,11 @@ export default {
                 'Ясно': 'sun-icon',
                 'Пасмурно': 'clouds-icon',
                 'Дождь': 'rain-icon',
-                'Снег': 'snow-icon'
+                'Снег': 'snow-icon',
+                'Облачно': 'cloudy-icon',
+                'Град': 'hail-icon',
+                'Гроза': 'thunder-icon',
+                'Дождь со снегом': 'snow-rain-icon'
             },
             pathImage: 'empty-icon',
         }

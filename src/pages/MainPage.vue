@@ -47,10 +47,10 @@
                 <tr class="parameters" v-for="route in arrRoute" :key="route.uid" :value="route.uid">
                     <td class="parameters__info">
                         <div class="parameters__info__segment">
-                                <span class="parameters__info__segment__route"
-                                      @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
-                                    {{ route.title }}
-                                </span>
+                            <div class="parameters__info__segment__route"
+                                 @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
+                                {{ route.title }}
+                            </div>
                             <span class="parameters__info__segment__company">
                                     {{ route.carrier.split(' ')[0] + ' ППК' }}
                                 </span>
@@ -74,6 +74,12 @@
                         <div class="parameters__arrival__segment">
                             <span class="parameters__arrival__segment__time">{{ route.arrShow }}</span>
                             <span class="parameters__arrival__segment__explain">Прибытие</span>
+                        </div>
+                    </td>
+
+                    <td class="parameters__has-left">
+                        <div class="parameters__has-left__segment">
+                            <span class="parameters__has-left__segment__text">Ушёл</span>
                         </div>
                     </td>
                 </tr>
@@ -383,15 +389,8 @@ img {
     margin: 0 3.3% 0 1.6%;
 }
 
-.from__input:focus ~ .from__label,
-.from__input:not(:placeholder-shown).from__input:not(:focus) ~ .from__label {
-    top: -10%;
-    left: 8%;
-    font-size: 16px;
-    color: $main-color;
-}
-
-.to__input:focus ~ .to__label,
+.from__input:focus ~ .from__label, .to__input:focus ~ .to__label,
+.from__input:not(:placeholder-shown).from__input:not(:focus) ~ .from__label,
 .to__input:not(:placeholder-shown).to__input:not(:focus) ~ .to__label {
     top: -10%;
     left: 8%;
@@ -511,6 +510,8 @@ img {
     border-radius: 10px;
     padding: 1.9em 3.8em;
     box-shadow: 0 4px 10px 2px #e0e0e3;
+    position: relative;
+    overflow: hidden;
 
     &__info {
         min-width: 30%;
@@ -584,6 +585,22 @@ img {
                 margin-top: 5px;
 
             }
+        }
+    }
+
+    &__has-left {
+        display: none;
+        position: absolute;
+        background-color: $input-grey;
+        border-bottom-left-radius: 10px;
+        padding: 0.5em 1.5em;
+        top: 0;
+        right: 0;
+
+        &__segment__text {
+            color: $white;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 20px;
         }
     }
 }
