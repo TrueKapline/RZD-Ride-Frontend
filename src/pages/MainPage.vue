@@ -52,7 +52,7 @@
                                 {{ route.title }}
                             </div>
                             <span class="parameters__info__segment__company" :style="route.isLeave ? 'opacity: 50%' : ''">
-                                {{ route.carrier.split(' ')[0] + ' ППК' }}
+                                {{ route.carrier }}
                             </span>
                         </div>
                     </td>
@@ -225,7 +225,8 @@ export default {
                         el.hour = el.dep[21];
                         el.depShow = el.dep.slice(11, 16);
                         el.arrShow = el.arr.slice(11, 16);
-                        if (el.dep > ((new Date((new Date()).getTime() + (parseInt((new Date()).toTimeString().slice(13, 15)))*3600*1000)).toJSON())) el.isLeave = false;
+                        if (el.carrier == 'Байкальская пригородная пассажирская компания') el.carrier = 'Байкальская ППК';
+                        if (el.dep > ((new Date((new Date()).getTime() + (el.dep.slice(20, 22))*3600*1000)).toJSON())) el.isLeave = false;
                         else el.isLeave = true;
                         let travelTime = (new Date(el.arr) - new Date(el.dep)) / 60000;
                         let hour = 0;

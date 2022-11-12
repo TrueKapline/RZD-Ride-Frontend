@@ -40,8 +40,8 @@ export default {
             time: '', //Время, погода
             status: ['', ''], //Маршрут сейчас, следующая остановка
             baseURLWeather: 'https://mypew.ru:3001/weather', //Ссылка на погоду
-            stationNow: '',
-            weather: {},
+            stationNow: '', //На какую станцию был сделан запрос погоды
+            weather: {}, //Погода
         }
     },
     methods: {
@@ -66,9 +66,10 @@ export default {
                 alert('Error: ' + e);
             }
         },
-        createStop() {
+        createStop() { //Загрузка на какой станции находится электричка
             let buffer = (new Date());
             let timer = (new Date(buffer.getTime() + parseInt(this.date.slice(20,22))*3600*1000)).toJSON();
+            timer = timer.slice(0, 10) + ' ' + timer.slice(11);
             let timerFormat = timer;
             if (this.arrStop[0].departure > timerFormat) this.status[0] = "Поезд ещё не выехал";
             if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status[0] = "Поезд уже закончил свой маршрут";
@@ -77,25 +78,31 @@ export default {
                 if (el.departure > timerFormat && el.arrival <= timerFormat) {
                     this.status[0] = "Стоянка на станции " + el.title;
                     if (this.stationNow != el.title) {
-                        try {
-                            this.loadWeather(el.title, el.yandex_code);
-                            this.stationNow = el.title;
-                        } catch(e) {
-                            alert('Error: ' + e);
-                        }
+                        this.loadWeather(el.title, el.yandex_code);
+                        this.stationNow = el.title;
                     }
                     if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
                 }
-                else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
+                else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat) && (this.arrStop[index + 1].arrival > timerFormat)) {
                     this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
+                    if (this.stationNow != this.arrStop[index + 1].title) {
+                        this.loadWeather(this.arrStop[index + 1].title, this.arrStop[index + 1].yandex_code);
+                        this.stationNow = this.arrStop[index + 1].title;
+                    }
                     if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                } else if (index > this.arrStop.length - 1) {
+                    this.status[1] = '';
                 }
             });
         },
-        async loadWeather(title, yandex_code) {
-            const responseWeather = await axios.get(this.baseURLWeather + '?type_info=fact&station=' + yandex_code);
-            this.weather = responseWeather.data;
-            console.log(title, yandex_code);
+        async loadWeather(title, yandex_code) { //Загрузка погоды
+            try {
+                const responseWeather = await axios.get(this.baseURLWeather + '?type_info=fact&station=' + yandex_code);
+                this.weather = responseWeather.data;
+                console.log(title, yandex_code);
+            } catch {
+                alert('Error: ' + e);
+            }
         }
     },
     created() {
