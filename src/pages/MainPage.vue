@@ -38,8 +38,8 @@
         <div class="results" :style="isResultHidden ? 'display: none' : ''">
             <div class="window info">
                 <div class="info__wrapper">
-                    <h1 class="info__header">Расписания по маршруту Ангарск – Иркутск-Пасс.</h1>
-                    <p class="info__date">15 ноября, вторник</p>
+                    <h1 class="info__header">Расписания по маршруту {{startStation}} – {{endStation}}</h1>
+                    <p class="info__date">{{selectDate}}</p>
                 </div>
             </div>
             <table class="search-segments">
@@ -47,11 +47,11 @@
                 <tr class="parameters" v-for="route in arrRoute" :key="route.uid" :value="route.uid">
                     <td class="parameters__info">
                         <div class="parameters__info__segment">
-                                <span class="parameters__info__segment__route"
+                                <span class="parameters__info__segment__route" :style="route.isLeave ? 'opacity: 50%' : ''"
                                       @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
                                     {{ route.title }}
                                 </span>
-                            <span class="parameters__info__segment__company">
+                            <span class="parameters__info__segment__company" :style="route.isLeave ? 'opacity: 50%' : ''">
                                     {{ route.carrier.split(' ')[0] + ' ППК' }}
                                 </span>
                         </div>
@@ -59,21 +59,21 @@
 
                     <td class="parameters__departure">
                         <div class="parameters__departure__segment">
-                            <span class="parameters__departure__segment__time">{{ route.depShow }}</span>
-                            <span class="parameters__departure__segment__explain">Отбытие</span>
+                            <span class="parameters__departure__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.depShow }}</span>
+                            <span class="parameters__departure__segment__explain" :style="route.isLeave ? 'opacity: 50%' : ''">Отбытие</span>
                         </div>
                     </td>
 
                     <td class="parameters__total">
                         <div class="parameters__total__segment">
-                            <span class="parameters__total__segment__time">{{ route.travelTimeShow }}</span>
+                            <span class="parameters__total__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.travelTimeShow }}</span>
                         </div>
                     </td>
 
                     <td class="parameters__arrival">
                         <div class="parameters__arrival__segment">
-                            <span class="parameters__arrival__segment__time">{{ route.arrShow }}</span>
-                            <span class="parameters__arrival__segment__explain">Прибытие</span>
+                            <span class="parameters__arrival__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.arrShow }}</span>
+                            <span class="parameters__arrival__segment__explain" :style="route.isLeave ? 'opacity: 50%' : ''">Прибытие</span>
                         </div>
                     </td>
                 </tr>
@@ -219,6 +219,8 @@ export default {
                         el.hour = el.dep[21];
                         el.depShow = el.dep.slice(11, 16);
                         el.arrShow = el.arr.slice(11, 16);
+                        if (el.dep > ((new Date((new Date()).getTime() + (parseInt((new Date()).toTimeString().slice(13, 15)))*3600*1000)).toJSON())) el.isLeave = false;
+                        else el.isLeave = true;
                         let travelTime = (new Date(el.arr) - new Date(el.dep)) / 60000;
                         let hour = 0;
                         if (travelTime >= 60) {
@@ -227,7 +229,7 @@ export default {
                         } else {
                             el.travelTimeShow = '';
                         }
-                        el.travelTimeShow += (travelTime - hour * 60) + " м";
+                        el.travelTimeShow += (travelTime - hour * 60) + " мин";
                     });
                 } catch (e) {
                     alert('Error: ' + e);

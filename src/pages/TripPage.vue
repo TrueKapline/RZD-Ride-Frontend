@@ -47,14 +47,8 @@ export default {
     methods: {
         async loadTrip() { //Загрузка маршрута
             try {
-                let buffer = (new Date());
-                let timer = (new Date(buffer.getUTCFullYear(), buffer.getUTCMonth(), buffer.getUTCDate(), buffer.getUTCHours() + parseInt(this.date[21]), buffer.getUTCMinutes(), buffer.getUTCSeconds())).toLocaleString();
-                let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
-                this.time = timer.slice(12, 20);
                 const response = await axios.get(this.baseURL + '?uid=' + this.uid + '&date=' + this.date.slice(0,10));
                 this.arrStop = response.data.stops;
-                if (this.arrStop[0].departure > timerFormat) this.status[0] = "Поезд ещё не выехал"
-                if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status[0] = "Поезд уже закончил свой маршрут" //Следующая остановка – Горка
                 console.log(this.arrStop);
                 this.arrStop.forEach((el, index) => {
                     if (el.arrival) {
@@ -63,59 +57,40 @@ export default {
                     if (el.departure) {
                         el.departureShow = el.departure.slice(11, 16);
                     }
-                    if (el.departure > timerFormat && el.arrival < timerFormat) {
-                        this.status[0] = "Стоянка на станции " + el.title;
-                        if (this.stationNow != el.title) {
-                            try {
-                                this.loadWeather(el.title, el.yandex_code);
-                                this.stationNow = el.title;
-                            } catch(e) {
-                                alert('Error: ' + e);
-                            }
-                        }
-                        if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
-                    }
-                    else if ((index < this.arrStop.length - 1) && (el.departure < timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat) && this.arrStop[index + 1].arrival > timerFormat) {
-                        this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
-                        if (this.stationNow == '') {
-                            try {
-                                this.loadWeather(el.title, el.yandex_code);
-                                this.stationNow = el.title;
-                            } catch(e) {
-                                alert('Error: ' + e);
-                            }
-                        }
-                        if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
-                    }
-                    
-                })
+                });
+                this.createStop();
                 this.interval = setInterval(() => {
-                    let buffer = (new Date());
-                    let timer = (new Date(buffer.getUTCFullYear(), buffer.getUTCMonth(), buffer.getUTCDate(), buffer.getUTCHours() + parseInt(this.date[21]), buffer.getUTCMinutes(), buffer.getUTCSeconds())).toLocaleString();
-                    let timerFormat = timer.slice(6, 10) + '-' + timer.slice(3, 5) + '-' + timer.slice(0, 2) + ' ' + timer.slice(12, 20);
-                    this.time = timer.slice(12, 20);
-                    this.arrStop.forEach((el, index) => {
-                        if (el.departure > timerFormat && el.arrival <= timerFormat) {
-                            this.status[0] = "Стоянка на станции " + el.title;
-                            if (this.stationNow != el.title) {
-                                try {
-                                    this.loadWeather(el.title, el.yandex_code);
-                                    this.stationNow = el.title;
-                                } catch(e) {
-                                    alert('Error: ' + e);
-                                }
-                            }
-                            if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
-                        }
-                        else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
-                            this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
-                            if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
-                        }
-                    });
+                    this.createStop()
                 }, 1000);
             } catch(e) {
                 alert('Error: ' + e);
             }
+        },
+        createStop() {
+            let buffer = (new Date());
+            let timer = (new Date(buffer.getTime() + parseInt(this.date.slice(20,22))*3600*1000)).toJSON();
+            let timerFormat = timer;
+            if (this.arrStop[0].departure > timerFormat) this.status[0] = "Поезд ещё не выехал";
+            if (this.arrStop[this.arrStop.length - 1].arrival < timerFormat) this.status[0] = "Поезд уже закончил свой маршрут";
+            this.time = timer.slice(11, 19);
+            this.arrStop.forEach((el, index) => {
+                if (el.departure > timerFormat && el.arrival <= timerFormat) {
+                    this.status[0] = "Стоянка на станции " + el.title;
+                    if (this.stationNow != el.title) {
+                        try {
+                            this.loadWeather(el.title, el.yandex_code);
+                            this.stationNow = el.title;
+                        } catch(e) {
+                            alert('Error: ' + e);
+                        }
+                    }
+                    if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                }
+                else if ((index < this.arrStop.length - 1) && (el.departure <= timerFormat) && (this.arrStop[this.arrStop.length - 1].arrival > timerFormat)) {
+                    this.status[0] = el.title + " - " + this.arrStop[index + 1].title;
+                    if (index < this.arrStop.length - 1) this.status[1] = "Следующая остановка – " + this.arrStop[index + 1].title;
+                }
+            });
         },
         async loadWeather(title, yandex_code) {
             const responseWeather = await axios.get(this.baseURLWeather + '?type_info=fact&station=' + yandex_code);
