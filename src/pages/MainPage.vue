@@ -38,8 +38,8 @@
         <div class="results" :style="isResultHidden === 3 ? '' : 'display: none'">
             <div class="window info">
                 <div class="info__wrapper">
-                    <h1 class="info__header">Расписания по маршруту {{ startStation }} – {{ endStation }}</h1>
-                    <p class="info__date">{{ selectDate }}</p>
+                    <h1 class="info__header">Расписания по маршруту {{ showStartStation }} – {{ showEndStation }}</h1>
+                    <p class="info__date">{{ showDate }}</p>
                 </div>
             </div>
             <table class="search-segments">
@@ -126,6 +126,9 @@ export default {
             selectDate: '', //Выбранная дата
             fromHint: '', //Подсказка для начально станции
             toHint: '', //Подсказка для конечной станции
+            showDate: '', //Дата для показа
+            showStartStation: '',
+            showEndStation: '',
         };
     },
     methods: {
@@ -230,11 +233,16 @@ export default {
             this.isAvailEnd = false;
             this.arrEndStation = [];
             this.isAvailStart = false;
+            let arrMounth = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
+            this.showDate = this.selectDate.slice(8) + ' ' + arrMounth[this.selectDate.slice(5, 7) - 1];
+            if (this.showDate[0] == '0') this.showDate = this.showDate.slice(1);
             if ((this.startStation != '') && (this.endStation != '') && (this.selectDate != '')) {
                 try {
                     const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=' + this.selectDate);
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
+                    this.showStartStation = this.startStation;
+                    this.showEndStation = this.endStation;
                     if (this.arrRoute.length === 0) {
                         this.isResultHidden = 2;
                     } else {
