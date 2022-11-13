@@ -1,8 +1,8 @@
 <template>
-    <main :style="isResultHidden ? 'justify-content: center' : ''">
-        <div class="window search">
-            <h1 class="header">Расписание электричек</h1>
-            <div class="form">
+    <main :style="isResultHidden === 1 ? 'justify-content: center' : ''">
+        <div class="window search" :class="isResultHidden !== 1 ? 'fixed' : ''">
+            <h1 class="header" :class="isResultHidden !== 1 ? 'hidden' : ''">Расписание электричек</h1>
+            <div class="form" :class="isResultHidden !== 1 ? 'fixed-margin' : ''">
                 <div class="from">
                     <input type="text" id="from" class="from__input" placeholder=" " autocomplete="off"
                            @click="clickStartStation()" v-model="startStation" @keyup.enter="enterClicked()">
@@ -35,11 +35,11 @@
                 <button class="search-button" @click="getStation()">Найти маршруты</button>
             </div>
         </div>
-        <div class="results" :style="isResultHidden ? 'display: none' : ''">
+        <div class="results" :style="isResultHidden === 3 ? '' : 'display: none'">
             <div class="window info">
                 <div class="info__wrapper">
-                    <h1 class="info__header">Расписания по маршруту {{startStation}} – {{endStation}}</h1>
-                    <p class="info__date">{{selectDate}}</p>
+                    <h1 class="info__header">Расписания по маршруту {{ startStation }} – {{ endStation }}</h1>
+                    <p class="info__date">{{ selectDate }}</p>
                 </div>
             </div>
             <table class="search-segments">
@@ -47,11 +47,14 @@
                 <tr class="parameters" v-for="route in arrRoute" :key="route.uid" :value="route.uid">
                     <td class="parameters__info">
                         <div class="parameters__info__segment">
-                            <div class="parameters__info__segment__route" :style="route.isLeave ? 'opacity: 50%' : ''"
-                                @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
-                                {{ route.title }}
+                            <div class="parameters__info__segment__route" :style="route.isLeave ? 'opacity: 50%' : ''">
+                                <span class="parameters__info__segment__route__text"
+                                      @click="$router.push({name: 'TripPage', params: {uid: route.uid, date: route.dep}});">
+                                    {{ route.title }}
+                                </span>
                             </div>
-                            <span class="parameters__info__segment__company" :style="route.isLeave ? 'opacity: 50%' : ''">
+                            <span class="parameters__info__segment__company"
+                                  :style="route.isLeave ? 'opacity: 50%' : ''">
                                 {{ route.carrier }}
                             </span>
                         </div>
@@ -59,25 +62,31 @@
 
                     <td class="parameters__departure">
                         <div class="parameters__departure__segment">
-                            <span class="parameters__departure__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.depShow }}</span>
-                            <span class="parameters__departure__segment__explain" :style="route.isLeave ? 'opacity: 50%' : ''">Отбытие</span>
+                            <span class="parameters__departure__segment__time"
+                                  :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.depShow }}</span>
+                            <span class="parameters__departure__segment__explain"
+                                  :style="route.isLeave ? 'opacity: 50%' : ''">Отбытие</span>
                         </div>
                     </td>
 
                     <td class="parameters__total">
                         <div class="parameters__total__segment">
-                            <span class="parameters__total__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.travelTimeShow }}</span>
+                            <span class="parameters__total__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">
+                                {{ route.travelTimeShow }}
+                            </span>
                         </div>
                     </td>
 
                     <td class="parameters__arrival">
                         <div class="parameters__arrival__segment">
-                            <span class="parameters__arrival__segment__time" :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.arrShow }}</span>
-                            <span class="parameters__arrival__segment__explain" :style="route.isLeave ? 'opacity: 50%' : ''">Прибытие</span>
+                            <span class="parameters__arrival__segment__time"
+                                  :style="route.isLeave ? 'opacity: 50%' : ''">{{ route.arrShow }}</span>
+                            <span class="parameters__arrival__segment__explain"
+                                  :style="route.isLeave ? 'opacity: 50%' : ''">Прибытие</span>
                         </div>
                     </td>
 
-                    <td class="parameters__has-left">
+                    <td class="parameters__has-left" :style="route.isLeave ? '' : 'display: none'">
                         <div class="parameters__has-left__segment">
                             <span class="parameters__has-left__segment__text">Ушёл</span>
                         </div>
@@ -86,6 +95,12 @@
                 </tbody>
             </table>
 
+        </div>
+        <div class="error" :style="isResultHidden === 2 ? '' : 'display: none'">
+            <div class="error__wrapper">
+                <img src="@/icons/smile.svg" alt="" class="error__image" draggable="false">
+                <p class="error__text">По вашему запросу не найдено результатов</p>
+            </div>
         </div>
     </main>
 </template>
@@ -103,11 +118,11 @@ export default {
             arrRoute: [], //Массив маршрутов
             arrStartStation: [], //Массив начальных станций для подсказки
             isAvailStart: false, //Показывать подсказку начальных станция
-            arrEndStation: [], //Массив конечных станция для подсказки
-            isAvailEnd: false, //Показывать подскзку конечных станций
-            isResultHidden: true, //Получен ли результат маршрутов
-            selectStartStation: false, //Выбран инпут начальной станция
-            selectEndStation: false, //Выбран инпут конечной станция
+            arrEndStation: [], //Массив конечных станций для подсказки
+            isAvailEnd: false, //Показывать подсказку конечных станций
+            isResultHidden: 1, //Получен ли результат маршрутов
+            selectStartStation: false, //Выбран input начальной станции
+            selectEndStation: false, //Выбран input конечной станции
             selectDate: '', //Выбранная дата
             fromHint: '', //Подсказка для начально станции
             toHint: '', //Подсказка для конечной станции
@@ -218,15 +233,19 @@ export default {
             if ((this.startStation != '') && (this.endStation != '') && (this.selectDate != '')) {
                 try {
                     const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=' + this.selectDate);
-                    this.isResultHidden = false;
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
+                    if (this.arrRoute.length === 0) {
+                        this.isResultHidden = 2;
+                    } else {
+                        this.isResultHidden = 3;
+                    }
                     this.arrRoute.map(el => {
                         el.hour = el.dep[21];
                         el.depShow = el.dep.slice(11, 16);
                         el.arrShow = el.arr.slice(11, 16);
-                        if (el.carrier == 'Байкальская пригородная пассажирская компания') el.carrier = 'Байкальская ППК';
-                        if (el.dep > ((new Date((new Date()).getTime() + (el.dep.slice(20, 22))*3600*1000)).toJSON())) el.isLeave = false;
+                        if (el.carrier === 'Байкальская пригородная пассажирская компания') el.carrier = 'Байкальская ППК';
+                        if (el.dep > ((new Date((new Date()).getTime() + (el.dep.slice(20, 22)) * 3600 * 1000)).toJSON())) el.isLeave = false;
                         else el.isLeave = true;
                         let travelTime = (new Date(el.arr) - new Date(el.dep)) / 60000;
                         let hour = 0;
@@ -323,7 +342,7 @@ img {
 
 .window {
     background-color: $white;
-    box-shadow: 0 4px 10px 2px #E0E0E3;
+    box-shadow: 0 4px 10px 2px hsla(0 0 58 / 15%);
     border-radius: 10px;
     width: 100%;
     margin: 3.1em 0 0;
@@ -433,8 +452,36 @@ img {
     }
 }
 
+.error {
+    background-color: $white;
+    border-radius: 10px;
+    margin: 1.9em 0;
+    box-shadow: 0 4px 10px 2px hsla(0 0 58 / 15%);
+    height: 100%;
+
+    &__wrapper {
+        margin: 10em 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 70px;
+    }
+
+    &__image {
+        user-select: none;
+    }
+
+    &__text {
+        font-size: 72px;
+        text-align: center;
+        color: $main-color;
+    }
+}
+
 .search-results {
     position: absolute;
+    z-index: 1;
     top: 77px;
     background-color: $white;
     border-radius: 10px;
@@ -512,7 +559,7 @@ img {
     background-color: $white;
     border-radius: 10px;
     padding: 1.9em 3.8em;
-    box-shadow: 0 4px 10px 2px #e0e0e3;
+    box-shadow: 0 4px 10px 2px hsla(0 0 58 / 15%);
     position: relative;
     overflow: hidden;
 
@@ -526,8 +573,16 @@ img {
 
             &__route {
                 color: $accent-red;
-                cursor: pointer;
                 font-size: 20px;
+                transition: color 300ms cubic-bezier(0.5, 0, 0, 1);
+
+                &__text {
+                    cursor: pointer;
+                }
+
+                &:hover {
+                    color: $accent-red-hover;
+                }
             }
 
             &__company {
@@ -592,7 +647,6 @@ img {
     }
 
     &__has-left {
-        display: none;
         position: absolute;
         background-color: $input-grey;
         border-bottom-left-radius: 10px;
@@ -608,5 +662,20 @@ img {
     }
 }
 
+.fixed {
+    margin: 0;
+    border-radius: 0 0 10px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+.fixed-margin {
+    margin: 40px 60px 40px;
+}
 
 </style>
