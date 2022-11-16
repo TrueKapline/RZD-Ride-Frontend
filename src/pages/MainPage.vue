@@ -35,6 +35,13 @@
                 <button class="search-button" @click="getStation()">Найти маршруты</button>
             </div>
         </div>
+        
+        <div class="error" :style="isResultHidden === 4 ? '' : 'display: none'" style="width: 100%">
+            <div class="error__wrapper" style="height: 100%; margin: 0;">
+                <div class="loader"></div>
+            </div>
+        </div>
+
         <div class="results" :style="isResultHidden === 3 ? '' : 'display: none'">
             <div class="window info">
                 <div class="info__wrapper">
@@ -120,15 +127,15 @@ export default {
             isAvailStart: false, //Показывать подсказку начальных станция
             arrEndStation: [], //Массив конечных станций для подсказки
             isAvailEnd: false, //Показывать подсказку конечных станций
-            isResultHidden: 1, //Получен ли результат маршрутов
+            isResultHidden: 1, //Получен ли результат маршрутов 1 - нет запроса, 2 - ответ пустой 3 - ответ пришёл 4 - идёт загрузка
             selectStartStation: false, //Выбран input начальной станции
             selectEndStation: false, //Выбран input конечной станции
             selectDate: '', //Выбранная дата
             fromHint: '', //Подсказка для начально станции
             toHint: '', //Подсказка для конечной станции
             showDate: '', //Дата для показа
-            showStartStation: '',
-            showEndStation: '',
+            showStartStation: '', //Начальная станция для вывода
+            showEndStation: '', //Конечная станция для вывода
         };
     },
     methods: {
@@ -238,6 +245,7 @@ export default {
             if (this.showDate[0] == '0') this.showDate = this.showDate.slice(1);
             if ((this.startStation != '') && (this.endStation != '') && (this.selectDate != '')) {
                 try {
+                    this.isResultHidden = 4;
                     const response = await axios.get(this.baseURL + '?from=' + this.startStation + '&to=' + this.endStation + '&transport_types=suburban&date=' + this.selectDate);
                     this.arrRoute = response.data;
                     console.log(this.arrRoute);
@@ -686,4 +694,49 @@ img {
     margin: 40px 60px 40px;
 }
 
+.loader {
+ width: 60%;
+ height: 4px;
+ border-radius: 30px;
+ background-color: rgba(0,0,0,0.2);
+ position: relative;
+}
+
+.loader::before {
+ content: "";
+ position: absolute;
+ background: $accent-red;
+ top: 0;
+ left: 0;
+ width: 0%;
+ height: 100%;
+ border-radius: 30px;
+ -webkit-animation: moving 1s ease-in-out infinite;
+         animation: moving 1s ease-in-out infinite;
+ ;
+}
+
+@-webkit-keyframes moving {
+ 50% {
+  width: 100%;
+ }
+
+ 100% {
+  width: 0;
+  right: 0;
+  left: unset;
+ }
+}
+
+@keyframes moving {
+ 50% {
+  width: 100%;
+ }
+
+ 100% {
+  width: 0;
+  right: 0;
+  left: unset;
+ }
+}
 </style>
