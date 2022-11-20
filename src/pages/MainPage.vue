@@ -142,7 +142,7 @@ export default {
         async changeStartStation() { //Функция для загрузки подсказки набора стартовых станций
             this.startStation = this.startStation.trimStart();
             let bufferStartStation = this.startStation;
-            if (this.startStation != '' && !this.selectStartStation) {
+            if (!this.selectStartStation) {
                 try {
                     if (this.arrStartStation.length !== 0) {
                         this.fromHint = this.startStation.trim() + this.arrStartStation[0].station_name.slice(this.startStation.trim().length);
@@ -177,14 +177,14 @@ export default {
         async changeEndStation() { //Функция для загрузки подсказки набора конечных станций
             this.endStation = this.endStation.trimStart();
             let bufferEndStation = this.endStation;
-            if (this.endStation != '' && !this.selectEndStation) {
+            if (!this.selectEndStation) {
                 try {
                     if (this.arrEndStation.length !== 0) {
                         this.toHint = this.endStation.trim() + this.arrEndStation[0].station_name.slice(this.endStation.trim().length);
                     } else {
                         this.toHint = '';
                     }
-                    const response = await axios.get(this.findURL + '?station_name=' + this.endStation);
+                    const response = await axios.get(this.findURL + '?station_name=' + this.endStation + '&from=' + this.startStation);
                     if (bufferEndStation === this.endStation) {
                         this.arrEndStation = response.data;
                         if (this.arrEndStation.length !== 0) {
